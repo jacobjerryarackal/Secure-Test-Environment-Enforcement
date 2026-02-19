@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { 
-  Card, Button, Typography, Radio, Space, Input, App, Form, Checkbox, Row, Col, Divider, Layout, Menu, Avatar, Statistic 
+import React, { useState } from 'react';
+import {
+  Card, Button, Typography, Radio, Space, Input, App, Form, Checkbox, Row, Col, Divider, Layout, Menu, Avatar, Statistic
 } from 'antd';
-import { 
-  SendOutlined, 
-  SafetyCertificateOutlined, 
-  SafetyOutlined, 
+import {
+  SendOutlined,
+  SafetyCertificateOutlined,
+  SafetyOutlined,
   AuditOutlined,
   ThunderboltOutlined,
   EyeOutlined,
@@ -51,9 +51,48 @@ export default function AssessmentPage() {
   const [candidate, setCandidate] = useState({ name: '', email: '' });
   const [answers, setAnswers] = useState<Record<string, string>>({});
 
+  // 🔥 AI‑focused questions
   const questions = [
-    { id: 'q1', text: 'What is the capital of France?', options: ['Paris', 'London', 'Berlin', 'Madrid'] },
-    { id: 'q2', text: 'Which planet is known as the Red Planet?', options: ['Venus', 'Mars', 'Jupiter', 'Saturn'] },
+    {
+      id: 'q1',
+      text: 'What does RAG stand for in the context of LLMs?',
+      options: [
+        'Retrieval-Augmented Generation',
+        'Random Access Generation',
+        'Recursive Attention Gradient',
+        'Reinforced Adversarial Generation'
+      ]
+    },
+    {
+      id: 'q2',
+      text: 'Which of the following is a characteristic of a Vector Database?',
+      options: [
+        'Stores embeddings for similarity search',
+        'Stores only tabular data',
+        'Uses SQL for queries',
+        'Stores data in key‑value pairs only'
+      ]
+    },
+    {
+      id: 'q3',
+      text: 'What are embeddings in machine learning?',
+      options: [
+        'Dense vector representations of data',
+        'Sparse matrices for feature selection',
+        'Model parameters after training',
+        'Activation functions'
+      ]
+    },
+    {
+      id: 'q4',
+      text: 'What is multi‑colinearity in regression analysis?',
+      options: [
+        'High correlation between independent variables',
+        'Lack of correlation between variables',
+        'Equal variance of errors',
+        'Normal distribution of residuals'
+      ]
+    },
   ];
 
   const menuItems = [
@@ -67,6 +106,7 @@ export default function AssessmentPage() {
     setLoading(true);
     const newId = uuidv4();
     try {
+      // ✅ FIX: attemptId (not attemptTd)
       await createAttempt({
         attemptId: newId,
         candidateName: values.name,
@@ -97,21 +137,22 @@ export default function AssessmentPage() {
     setSubmitting(true);
     try {
       await addLog({ eventType: 'assessment_submit', attemptId: activeAttemptId });
-      await flushLogs(); 
+      await flushLogs();
       await submitAttempt({ attemptId: activeAttemptId });
       stopFlushing();
-      router.push('/success'); 
+      router.push('/success');
     } catch (error) {
       msg.error('Submission failed.');
     } finally {
-      setSubmitting(false); 
+      setSubmitting(false);
     }
   };
 
+  // ----- LANDING PAGE (not started) -----
   if (!isStarted) {
     return (
       <Layout style={{ background: '#fff', overflowX: 'hidden' }}>
-        {/* Floating background shapes */}
+        {/* floating background shapes (unchanged) */}
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, pointerEvents: 'none' }}>
           <motion.div
             animate={{ y: [0, 20, 0], rotate: [0, 5, 0] }}
@@ -136,7 +177,7 @@ export default function AssessmentPage() {
             </motion.div>
             <Menu mode="horizontal" items={menuItems} style={{ border: 'none', background: 'transparent', flex: 1, justifyContent: 'center' }} />
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <Button type="primary" shape="round" size="large" onClick={() => document.getElementById('register')?.scrollIntoView({ behavior: 'smooth' })} 
+              <Button type="primary" shape="round" size="large" onClick={() => document.getElementById('register')?.scrollIntoView({ behavior: 'smooth' })}
                 style={{ background: 'linear-gradient(145deg, var(--color-5), var(--color-4))', border: 'none', boxShadow: '0 8px 20px rgba(132,94,194,0.3)' }}>
                 Get Started
               </Button>
@@ -145,15 +186,11 @@ export default function AssessmentPage() {
         </motion.div>
 
         <Content style={{ paddingTop: 64, position: 'relative', zIndex: 1 }}>
-          {/* HERO SECTION */}
+          {/* HERO SECTION (unchanged) */}
           <section id="home" style={{ padding: '100px 50px', minHeight: '90vh', display: 'flex', alignItems: 'center' }}>
             <Row gutter={[60, 40]} align="middle">
               <Col xs={24} md={12}>
-                <motion.div
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, ease: 'easeOut' }}
-                >
+                <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, ease: 'easeOut' }}>
                   <Title style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', lineHeight: 1.1, color: '#1a1a1a' }}>
                     Secure <br />
                     <span style={{ background: 'linear-gradient(145deg, var(--color-5), var(--color-4))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
@@ -162,19 +199,19 @@ export default function AssessmentPage() {
                     <br /> for the Future
                   </Title>
                   <Paragraph style={{ fontSize: '1.2rem', color: '#666', margin: '24px 0 32px' }}>
-                    High‑stakes assessments with zero‑tolerance for cheating. Real‑time monitoring, 
+                    High‑stakes assessments with zero‑tolerance for cheating. Real‑time monitoring,
                     locked browser, and immutable audit trails – all in one seamless platform.
                   </Paragraph>
-                  <Space size="large">
+                  <Space size="large" orientation="horizontal">
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button type="primary" size="large" shape="round" 
-                        onClick={() => document.getElementById('register')?.scrollIntoView({ behavior: 'smooth' })} 
+                      <Button type="primary" size="large" shape="round"
+                        onClick={() => document.getElementById('register')?.scrollIntoView({ behavior: 'smooth' })}
                         style={{ background: 'linear-gradient(145deg, var(--color-5), var(--color-4))', border: 'none', height: 54, padding: '0 36px', fontSize: '1.1rem', boxShadow: '0 10px 25px rgba(132,94,194,0.4)' }}>
                         Launch Demo
                       </Button>
                     </motion.div>
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button size="large" shape="round" 
+                      <Button size="large" shape="round"
                         onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
                         style={{ height: 54, padding: '0 36px', fontSize: '1.1rem', borderColor: 'var(--color-5)', color: 'var(--color-5)' }}>
                         Explore Features
@@ -184,20 +221,9 @@ export default function AssessmentPage() {
                 </motion.div>
               </Col>
               <Col xs={24} md={12}>
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                  transition={{ duration: 0.8, delay: 0.2, type: 'spring' }}
-                >
-                  <div style={{ 
-                    background: 'var(--bg-gradient)',
-                    borderRadius: '40px 40px 40px 40px',
-                    padding: '30px',
-                    boxShadow: '0 30px 60px rgba(0,0,0,0.1)',
-                    transform: 'perspective(1000px) rotateY(-5deg)',
-                    transition: 'transform 0.3s',
-                  }}>
-                    <Card style={{ borderRadius: 30, border: 'none', background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(10px)' }}>
+                <motion.div initial={{ opacity: 0, scale: 0.8, rotate: -5 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} transition={{ duration: 0.8, delay: 0.2, type: 'spring' }}>
+                  <div style={{ background: 'var(--bg-gradient)', borderRadius: '40px 40px 40px 40px', padding: '30px', boxShadow: '0 30px 60px rgba(0,0,0,0.1)', transform: 'perspective(1000px) rotateY(-5deg)' }}>
+                    <Card styles={{ body: { padding: 0 } }} style={{ borderRadius: 30, border: 'none', background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(10px)' }}>
                       <div style={{ display: 'flex', gap: 20, alignItems: 'center', padding: 20 }}>
                         <Avatar size={64} icon={<LockOutlined />} style={{ background: 'linear-gradient(145deg, var(--color-1), var(--color-2))' }} />
                         <div>
@@ -217,15 +243,9 @@ export default function AssessmentPage() {
             </Row>
           </section>
 
-          {/* FEATURES SECTION */}
+          {/* FEATURES SECTION (unchanged except orientation fix) */}
           <section id="features" style={{ padding: '120px 50px', background: 'var(--bg-gradient)' }}>
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              style={{ textAlign: 'center', marginBottom: 60 }}
-            >
+            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} style={{ textAlign: 'center', marginBottom: 60 }}>
               <Title level={2} style={{ fontSize: '3rem', color: 'var(--color-5)' }}>Powerful Features</Title>
               <Paragraph style={{ fontSize: '1.2rem', color: '#555' }}>Everything you need to ensure exam integrity</Paragraph>
             </motion.div>
@@ -248,6 +268,7 @@ export default function AssessmentPage() {
                   >
                     <Card
                       hoverable
+                      styles={{ body: { padding: '24px' } }}
                       style={{ height: '100%', borderRadius: 30, border: 'none', background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(5px)', boxShadow: '0 20px 40px rgba(0,0,0,0.05)' }}
                     >
                       <div style={{ fontSize: 48, color: feat.color, marginBottom: 20, textAlign: 'center' }}>{feat.icon}</div>
@@ -260,17 +281,12 @@ export default function AssessmentPage() {
             </Row>
           </section>
 
-          {/* STATS SECTION */}
+          {/* STATS SECTION (unchanged) */}
           <section id="stats" style={{ padding: '80px 50px', background: '#fff' }}>
             <Row gutter={[40, 40]} justify="center">
               <Col xs={24} md={8}>
-                <motion.div
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, type: 'spring' }}
-                >
-                  <Card style={{ textAlign: 'center', borderRadius: 30, border: 'none', background: 'linear-gradient(145deg, var(--color-1), var(--color-2))', color: 'white' }}>
+                <motion.div initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, type: 'spring' }}>
+                  <Card styles={{ body: { padding: '20px' } }} style={{ textAlign: 'center', borderRadius: 30, border: 'none', background: 'linear-gradient(145deg, var(--color-1), var(--color-2))', color: 'white' }}>
                     <Statistic 
                       title={<span style={{ color: 'white' }}>Exams Proctored</span>} 
                       value={15420} 
@@ -281,59 +297,33 @@ export default function AssessmentPage() {
                 </motion.div>
               </Col>
               <Col xs={24} md={8}>
-                <motion.div
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.1, type: 'spring' }}
-                >
-                  <Card style={{ textAlign: 'center', borderRadius: 30, border: 'none', background: 'linear-gradient(145deg, var(--color-3), var(--color-4))', color: 'white' }}>
+                <motion.div initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1, type: 'spring' }}>
+                  <Card styles={{ body: { padding: '20px' } }} style={{ textAlign: 'center', borderRadius: 30, border: 'none', background: 'linear-gradient(145deg, var(--color-3), var(--color-4))', color: 'white' }}>
                     <Statistic 
                       title={<span style={{ color: 'white' }}>Active Users</span>} 
-                      value={3245}
+                      value={3245} 
                       styles={{ content: { color: 'white' } }} 
                     />
                   </Card>
                 </motion.div>
               </Col>
               <Col xs={24} md={8}>
-                <motion.div
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.2, type: 'spring' }}
-                >
-                  <Card style={{ textAlign: 'center', borderRadius: 30, border: 'none', background: 'linear-gradient(145deg, var(--color-5), var(--color-4))', color: 'white' }}>
-                    <Statistic 
-                      title={<span style={{ color: 'white' }}>Trusted Companies</span>} 
-                      value={128}
-                      styles={{ content: { color: 'white' } }} 
-                    />
+                <motion.div initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2, type: 'spring' }}>
+                  <Card styles={{ body: { padding: '20px' } }} style={{ textAlign: 'center', borderRadius: 30, border: 'none', background: 'linear-gradient(145deg, var(--color-5), var(--color-4))', color: 'white' }}>
+                    <Statistic title={<span style={{ color: 'white' }}>Trusted Companies</span>} value={128} styles={{ content: { color: 'white' } }} />
                   </Card>
                 </motion.div>
               </Col>
             </Row>
           </section>
 
-          {/* REGISTRATION SECTION */}
+          {/* REGISTRATION SECTION (unchanged) */}
           <section id="register" style={{ padding: '120px 20px', background: 'var(--bg-gradient)' }}>
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <Card 
-                styles={{ body: { padding: 0 } }} 
-                style={{ maxWidth: '1100px', margin: '0 auto', borderRadius: '50px', overflow: 'hidden', border: 'none', boxShadow: '0 40px 80px rgba(0,0,0,0.15)' }}
-              >
+            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+              <Card styles={{ body: { padding: 0 } }} style={{ maxWidth: '1100px', margin: '0 auto', borderRadius: '50px', overflow: 'hidden', border: 'none', boxShadow: '0 40px 80px rgba(0,0,0,0.15)' }}>
                 <Row>
                   <Col xs={24} md={10} style={{ background: 'linear-gradient(145deg, var(--color-5), var(--color-4))', color: 'white', padding: '80px 50px' }}>
-                    <motion.div
-                      initial={{ x: -20 }}
-                      whileInView={{ x: 0 }}
-                      transition={{ duration: 0.5 }}
-                    >
+                    <motion.div initial={{ x: -20 }} whileInView={{ x: 0 }} transition={{ duration: 0.5 }}>
                       <Title level={2} style={{ color: 'white', fontSize: '2.5rem' }}>Ready to Start?</Title>
                       <Paragraph style={{ color: 'rgba(255,255,255,0.8)', fontSize: '1.1rem' }}>Join thousands of candidates who trust our secure platform.</Paragraph>
                       <Divider style={{ borderColor: 'rgba(255,255,255,0.2)' }} />
@@ -345,11 +335,7 @@ export default function AssessmentPage() {
                     </motion.div>
                   </Col>
                   <Col xs={24} md={14} style={{ padding: '80px 60px', background: 'white' }}>
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      transition={{ duration: 0.5, delay: 0.2 }}
-                    >
+                    <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }}>
                       <Title level={3} style={{ marginBottom: 30, color: 'var(--color-5)' }}>Candidate Registration</Title>
                       <Form layout="vertical" onFinish={handleStartExam}>
                         <Form.Item label="Full Name" name="name" rules={[{ required: true }]}>
@@ -363,7 +349,7 @@ export default function AssessmentPage() {
                         </Form.Item>
                         <Form.Item>
                           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                            <Button type="primary" block size="large" htmlType="submit" loading={loading} 
+                            <Button type="primary" block size="large" htmlType="submit" loading={loading}
                               style={{ background: 'linear-gradient(145deg, var(--color-5), var(--color-4))', height: 60, borderRadius: 16, fontSize: '1.2rem', border: 'none' }}>
                               Launch Secure Session
                             </Button>
@@ -378,7 +364,7 @@ export default function AssessmentPage() {
           </section>
         </Content>
 
-        {/* FOOTER */}
+        {/* FOOTER (unchanged) */}
         <Footer style={{ background: '#1a1a1a', padding: '60px 50px 20px', color: '#aaa' }}>
           <Row gutter={[40, 40]}>
             <Col xs={24} md={8}>
@@ -409,24 +395,112 @@ export default function AssessmentPage() {
     );
   }
 
-  // EXAM VIEW (unchanged)
+  // ----- ENHANCED EXAM VIEW (with AI questions & beautiful styling) -----
   return (
     <SecureTestWrapper candidateName={candidate.name}>
-      <div style={{ maxWidth: 800, margin: '0 auto', padding: '3rem 1rem' }}>
-        <Timer durationSeconds={3600} attemptId={activeAttemptId!} onFinish={handleSubmit} />
-        {questions.map((q) => (
-          <Card key={q.id} style={{ marginBottom: 20, borderRadius: 15, border: '2px solid var(--color-5)' }}>
-            <Title level={4}>{q.text}</Title>
-            <Radio.Group onChange={(e) => handleAnswerChange(q.id, e.target.value)}>
-              <Space orientation="vertical">
-                {q.options.map(opt => <Radio key={opt} value={opt}>{opt}</Radio>)}
-              </Space>
-            </Radio.Group>
-          </Card>
-        ))}
-        <Button type="primary" size="large" block onClick={handleSubmit} loading={submitting} style={{ background: 'linear-gradient(145deg, var(--color-5), var(--color-4))', height: 50, borderRadius: 10, border: 'none' }}>
-          Submit Assessment
-        </Button>
+      <div style={{ maxWidth: 900, margin: '0 auto', padding: '3rem 1rem' }}>
+        {/* Timer with gradient */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          style={{ marginBottom: 32 }}
+        >
+          <Timer durationSeconds={3600} attemptId={activeAttemptId!} onFinish={handleSubmit} />
+        </motion.div>
+
+        {/* Questions with staggered animation */}
+        <Space orientation="vertical" size="large" style={{ width: '100%' }}>
+          {questions.map((q, index) => (
+            <motion.div
+              key={q.id}
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <Card
+                style={{
+                  borderRadius: 24,
+                  border: `2px solid var(--color-${(index % 5) + 1})`,
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+                  overflow: 'hidden'
+                }}
+                styles={{ body: { padding: '28px' } }}
+              >
+                <Title level={4} style={{ marginBottom: 24, color: 'var(--color-5)' }}>
+                  <span style={{
+                    background: `var(--color-${(index % 5) + 1})`,
+                    color: 'white',
+                    padding: '4px 12px',
+                    borderRadius: 20,
+                    marginRight: 12,
+                    fontSize: 16
+                  }}>
+                    Q{index + 1}
+                  </span>
+                  {q.text}
+                </Title>
+                <Radio.Group
+                  onChange={(e) => handleAnswerChange(q.id, e.target.value)}
+                  value={answers[q.id]}
+                  style={{ width: '100%' }}
+                >
+                  <Space orientation="vertical" style={{ width: '100%' }}>
+                    {q.options.map((opt, optIdx) => (
+                      <motion.div
+                        key={opt}
+                        whileHover={{ scale: 1.02, x: 5 }}
+                        style={{
+                          padding: '12px 16px',
+                          borderRadius: 16,
+                          background: answers[q.id] === opt ? `var(--color-${(index % 5) + 1})` : '#f8f9fa',
+                          color: answers[q.id] === opt ? 'white' : 'inherit',
+                          transition: 'all 0.2s',
+                          cursor: 'pointer',
+                          border: answers[q.id] === opt ? 'none' : '1px solid #e9ecef'
+                        }}
+                        onClick={() => handleAnswerChange(q.id, opt)}
+                      >
+                        <Radio value={opt} style={{ display: 'block', width: '100%' }}>
+                          <Text style={{ color: answers[q.id] === opt ? 'white' : 'inherit', fontWeight: answers[q.id] === opt ? 500 : 400 }}>
+                            {opt}
+                          </Text>
+                        </Radio>
+                      </motion.div>
+                    ))}
+                  </Space>
+                </Radio.Group>
+              </Card>
+            </motion.div>
+          ))}
+        </Space>
+
+        {/* Submit Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          style={{ marginTop: 48, textAlign: 'center' }}
+        >
+          <Button
+            type="primary"
+            size="large"
+            icon={<SendOutlined />}
+            onClick={handleSubmit}
+            loading={submitting}
+            style={{
+              background: 'linear-gradient(145deg, var(--color-5), var(--color-4))',
+              border: 'none',
+              borderRadius: 40,
+              padding: '0 48px',
+              height: 56,
+              fontSize: '1.2rem',
+              boxShadow: '0 10px 25px rgba(132,94,194,0.4)'
+            }}
+          >
+            Submit Assessment
+          </Button>
+        </motion.div>
       </div>
     </SecureTestWrapper>
   );
