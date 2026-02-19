@@ -166,7 +166,7 @@ export default function AssessmentPage() {
                 <Paragraph style={{ color: 'rgba(255,255,255,0.8)' }}>
                   Confirm your identity to unlock the exam questions.
                 </Paragraph>
-                <Space direction="vertical" style={{ marginTop: 20 }}>
+                <Space orientation="vertical" style={{ marginTop: 20 }}>
                   <Text style={{ color: 'white' }}><AuditOutlined /> Duration: 60 Mins</Text>
                   <Text style={{ color: 'white' }}><SafetyCertificateOutlined /> Secure Session</Text>
                 </Space>
