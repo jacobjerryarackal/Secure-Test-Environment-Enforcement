@@ -13,7 +13,8 @@ import { clearQueue } from '@/lib/localQueue';
 
 interface SecureTestWrapperProps {
   children: React.ReactNode;
-  candidateName?: string;
+  candidateName: string;
+  candidateEmail?: string;  // added
 }
 
 const MAX_RETRIES = 3;
@@ -21,7 +22,8 @@ const RETRY_DELAY = 1000;
 
 export const SecureTestWrapper: React.FC<SecureTestWrapperProps> = ({
   children,
-  candidateName = 'Candidate',
+  candidateName,
+  candidateEmail,
 }) => {
   const [attemptId, setAttemptIdState] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,7 +33,7 @@ export const SecureTestWrapper: React.FC<SecureTestWrapperProps> = ({
   const message = useAppMessage();
 
   useRestrictions();
-  useFullscreenGuard(true); // fullscreen logic now requires user gesture
+  useFullscreenGuard(true);
 
   const requestFullscreen = async () => {
     try {
@@ -47,10 +49,11 @@ export const SecureTestWrapper: React.FC<SecureTestWrapperProps> = ({
     try {
       const newAttemptId = generateAttemptId();
 
-      // 1. Register attempt on backend FIRST
+      // Send all fields that backend expects
       await createAttempt({
         attemptId: newAttemptId,
         candidateName,
+        candidateEmail, // include if provided
         metadata: {
           userAgent: navigator.userAgent,
           screenSize: `${window.screen.width}x${window.screen.height}`,
@@ -60,20 +63,20 @@ export const SecureTestWrapper: React.FC<SecureTestWrapperProps> = ({
       setAttemptIdState(newAttemptId);
       setAttemptId(newAttemptId);
 
-      // Log the start event (will be queued, not sent until attempt is created)
       await addLog({
         eventType: 'assessment_start',
         attemptId: newAttemptId,
-        metadata: { candidateName },
+        metadata: { candidateName, candidateEmail },
       });
 
-      console.log('✅ Attempt ID (UUID):', newAttemptId);
-      await clearQueue();
-      // ✅ Attempt created successfully – now safe to start flushing
+      await clearQueue(); // remove any old queued logs
       startFlushing();
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Attempt creation failed (retry ${retryCount}):`, error);
+      if (error.response) {
+        console.error('Backend response:', error.response.status, error.response.data);
+      }
       if (retryCount < MAX_RETRIES) {
         setTimeout(() => initAttempt(retryCount + 1), RETRY_DELAY * Math.pow(2, retryCount));
       } else {
@@ -83,7 +86,7 @@ export const SecureTestWrapper: React.FC<SecureTestWrapperProps> = ({
     }
   };
 
-    useEffect(() => {
+  useEffect(() => {
     if (!initialized.current) {
       initialized.current = true;
       initAttempt();
