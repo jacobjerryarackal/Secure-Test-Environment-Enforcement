@@ -1,15 +1,21 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, Button, Typography, Radio, Space, Input, App, Form, Checkbox, Row, Col, Divider, Statistic } from 'antd';
+import { 
+  Card, Button, Typography, Radio, Space, Input, App, Form, Checkbox, Row, Col, Divider, Layout, Menu, Avatar 
+} from 'antd';
 import { 
   SendOutlined, 
   SafetyCertificateOutlined, 
-  RocketOutlined, 
   SafetyOutlined, 
   AuditOutlined,
   ThunderboltOutlined,
-  EyeOutlined
+  EyeOutlined,
+  LockOutlined,
+  DashboardOutlined,
+  ClockCircleOutlined,
+  FileTextOutlined,
+  CheckCircleOutlined
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -21,20 +27,17 @@ import { Timer } from '@/components/Timer';
 import { useLog } from '@/context/LogContext';
 import { createAttempt, submitAttempt } from '@/lib/api';
 
+const { Header, Content, Footer } = Layout;
 const { Title, Paragraph, Text } = Typography;
 
 export default function AssessmentPage() {
   const router = useRouter();
   const { message: msg } = App.useApp();
-  
-  // Destructure what we actually need from LogContext
   const { addLog, flushLogs, stopFlushing, setAttemptId } = useLog();
 
   const [isStarted, setIsStarted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  
-  // Fixed: This state now actually gets updated
   const [activeAttemptId, setActiveAttemptId] = useState<string | null>(null);
   const [candidate, setCandidate] = useState({ name: '', email: '' });
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -44,36 +47,35 @@ export default function AssessmentPage() {
     { id: 'q2', text: 'Which planet is known as the Red Planet?', options: ['Venus', 'Mars', 'Jupiter', 'Saturn'] },
   ];
 
-  // --- Start Assessment Logic ---
+  // Fix for Ant Design Menu Warning
+  const menuItems = [
+    { key: 'home', label: 'Home' },
+    { key: 'features', label: <a href="#features-section">Features</a> },
+    { key: 'register-link', label: <a href="#register">Register</a> },
+  ];
+
   const handleStartExam = async (values: any) => {
     setLoading(true);
     const newId = uuidv4();
-    
     try {
       await createAttempt({
         attemptId: newId,
         candidateName: values.name,
         candidateEmail: values.email,
-        metadata: {
-          userAgent: navigator.userAgent,
-          screenSize: `${window.innerWidth}x${window.innerHeight}`,
-        }
+        metadata: { userAgent: navigator.userAgent }
       });
-
-      // Update both Context and local state
       setAttemptId(newId);
       setActiveAttemptId(newId);
       setCandidate({ name: values.name, email: values.email });
       setIsStarted(true);
       window.scrollTo(0, 0);
     } catch (error) {
-      msg.error('Initialization failed. Check your connection.');
+      msg.error('Initialization failed.');
     } finally {
       setLoading(false);
     }
   };
 
-  // --- Answer Logging ---
   const handleAnswerChange = (questionId: string, value: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
     if (activeAttemptId) {
@@ -81,161 +83,191 @@ export default function AssessmentPage() {
     }
   };
 
-  // --- Final Submission ---
   const handleSubmit = async () => {
     if (!activeAttemptId) return;
     setSubmitting(true);
     try {
-      // 1. Send final log
       await addLog({ eventType: 'assessment_submit', attemptId: activeAttemptId });
-      
-      // 2. Force a final sync of the queue
       await flushLogs(); 
-      
-      // 3. Close the attempt in the DB
       await submitAttempt({ attemptId: activeAttemptId });
-      
-      // 4. Kill the logger and timer processes
       stopFlushing();
-      
-      msg.success('Assessment submitted successfully');
       router.push('/success'); 
     } catch (error) {
-      console.error(error);
-      msg.error('Submission encountered an issue. Please contact support.');
+      msg.error('Submission failed.');
     } finally {
       setSubmitting(false); 
     }
   };
 
-  // LANDING PAGE VIEW
   if (!isStarted) {
     return (
-      <div style={{ background: 'var(--bg-gradient)', minHeight: '100vh' }}>
-        <section style={{ padding: '80px 20px', textAlign: 'center', background: 'white' }}>
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-            <Title style={{ fontSize: '3rem', marginBottom: '10px', color: 'var(--color-5)' }}>
-              Secure Assessment Portal
-            </Title>
-            <Paragraph style={{ fontSize: '1.2rem', color: '#666', maxWidth: '700px', margin: '0 auto 40px' }}>
-              Enter your details to initialize the secure proctoring environment.
-            </Paragraph>
-          </motion.div>
-        </section>
+      <Layout style={{ background: '#fff' }}>
+        {/* HEADER: Cleaned up and functional */}
+        <Header style={{ 
+          position: 'fixed', 
+          width: '100%', 
+          zIndex: 1000, 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between', 
+          background: 'rgba(255, 255, 255, 0.8)', 
+          backdropFilter: 'blur(10px)',
+          borderBottom: '1px solid #f0f0f0',
+          padding: '0 50px' 
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Avatar size="large" icon={<SafetyCertificateOutlined />} style={{ background: 'var(--color-5)' }} />
+            <Title level={4} style={{ margin: 0, color: 'var(--color-5)' }}>SecureAssess</Title>
+          </div>
+          <Menu 
+            mode="horizontal" 
+            items={menuItems} 
+            style={{ border: 'none', background: 'transparent', flex: 1, justifyContent: 'center' }} 
+          />
+          <Button type="primary" shape="round" onClick={() => document.getElementById('register')?.scrollIntoView({ behavior: 'smooth' })} style={{ background: 'var(--color-5)' }}>
+            Join Now
+          </Button>
+        </Header>
 
-        <section style={{ padding: '40px 20px', maxWidth: '1200px', margin: '0 auto' }}>
-          <Row gutter={[32, 32]}>
-            <Col xs={24} md={8}>
-              <div className="scroll-reveal" style={{ textAlign: 'center', padding: '20px' }}>
-                <div style={{ background: 'var(--color-2)', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-                  <SafetyOutlined style={{ fontSize: '24px', color: 'white' }} />
-                </div>
-                <Title level={4}>Secure Proctoring</Title>
-                <Text type="secondary">Browser focus is monitored to ensure test integrity.</Text>
-              </div>
-            </Col>
-            <Col xs={24} md={8}>
-              <div className="scroll-reveal" style={{ textAlign: 'center', padding: '20px' }}>
-                <div style={{ background: 'var(--color-1)', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-                  <ThunderboltOutlined style={{ fontSize: '24px', color: 'white' }} />
-                </div>
-                <Title level={4}>Strict Controls</Title>
-                <Text type="secondary">Copy/Paste and Right-click are disabled throughout.</Text>
-              </div>
-            </Col>
-            <Col xs={24} md={8}>
-              <div className="scroll-reveal" style={{ textAlign: 'center', padding: '20px' }}>
-                <div style={{ background: 'var(--color-4)', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-                  <EyeOutlined style={{ fontSize: '24px', color: 'white' }} />
-                </div>
-                <Title level={4}>Audit Logging</Title>
-                <Text type="secondary">All activity is logged for verification purposes.</Text>
-              </div>
-            </Col>
-          </Row>
-        </section>
-
-        <section id="register" style={{ padding: '60px 20px' }}>
-          <Card 
-            styles={{ body: { padding: 0 } }} 
-            style={{ maxWidth: '900px', margin: '0 auto', borderRadius: '24px', overflow: 'hidden', border: 'none', boxShadow: '0 20px 50px rgba(0,0,0,0.1)' }}
-          >
-            <Row>
-              <Col xs={24} md={10} style={{ background: 'var(--color-5)', color: 'white', padding: '40px' }}>
-                <Title level={2} style={{ color: 'white' }}>Registration</Title>
-                <Paragraph style={{ color: 'rgba(255,255,255,0.8)' }}>
-                  Confirm your identity to unlock the exam questions.
-                </Paragraph>
-                <Space orientation="vertical" style={{ marginTop: 20 }}>
-                  <Text style={{ color: 'white' }}><AuditOutlined /> Duration: 60 Mins</Text>
-                  <Text style={{ color: 'white' }}><SafetyCertificateOutlined /> Secure Session</Text>
-                </Space>
+        <Content style={{ paddingTop: 64 }}>
+          {/* HERO SECTION */}
+          <section style={{ padding: '100px 50px', background: '#fff' }}>
+            <Row gutter={[40, 40]} align="middle">
+              <Col xs={24} md={12}>
+                <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
+                  <Title style={{ fontSize: '3.5rem', lineHeight: 1.1, color: '#1a1a1a' }}>
+                    Next-Gen <br />
+                    <span style={{ color: 'var(--color-5)' }}>Secure Proctoring</span>
+                  </Title>
+                  <Paragraph style={{ fontSize: '1.2rem', color: '#666', margin: '24px 0' }}>
+                    Deploy high-stakes exams with confidence. Our environment locks down the browser, 
+                    monitors behavior, and generates real-time audit logs.
+                  </Paragraph>
+                  <Space size="large">
+                    <Button type="primary" size="large" shape="round" 
+                      onClick={() => document.getElementById('register')?.scrollIntoView({ behavior: 'smooth' })} 
+                      style={{ background: 'var(--color-5)', height: 50, padding: '0 30px' }}>
+                      Start Assessment
+                    </Button>
+                    <Button size="large" shape="round" 
+                      onClick={() => document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' })}
+                      style={{ height: 50 }}>
+                      Learn More
+                    </Button>
+                  </Space>
+                </motion.div>
               </Col>
-              <Col xs={24} md={14} style={{ padding: '40px', background: 'white' }}>
-                <Form layout="vertical" onFinish={handleStartExam} requiredMark={false}>
-                  <Form.Item label="Full Name" name="name" rules={[{ required: true, message: 'Required' }]}>
-                    <Input size="large" placeholder="Your Name" />
-                  </Form.Item>
-                  <Form.Item label="Email Address" name="email" rules={[{ required: true, type: 'email' }]}>
-                    <Input size="large" placeholder="email@example.com" />
-                  </Form.Item>
-                  <Form.Item name="agree" valuePropName="checked" rules={[{ validator: (_, v) => v ? Promise.resolve() : Promise.reject('Required') }]}>
-                    <Checkbox>I agree to the secure proctoring terms.</Checkbox>
-                  </Form.Item>
-                  <Button type="primary" block size="large" htmlType="submit" loading={loading} style={{ height: '50px', borderRadius: '10px', background: 'var(--color-5)', border: 'none' }}>
-                    Launch Secure Assessment
-                  </Button>
-                </Form>
+              
+              <Col xs={24} md={12}>
+                {/* CSS-BASED HERO ILLUSTRATION (No external image needed) */}
+                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }}>
+                  <div style={{ 
+                    background: 'var(--bg-gradient)', 
+                    height: '400px', 
+                    borderRadius: '40px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{ position: 'absolute', width: '200px', height: '200px', background: 'var(--color-5)', opacity: 0.1, borderRadius: '50%', top: -50, left: -50 }} />
+                    <div style={{ position: 'absolute', width: '300px', height: '300px', background: 'var(--color-1)', opacity: 0.1, borderRadius: '50%', bottom: -100, right: -100 }} />
+                    <Card style={{ width: 280, borderRadius: 20, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
+                       <LockOutlined style={{ fontSize: 40, color: 'var(--color-5)', marginBottom: 16 }} />
+                       <Title level={4}>Security Active</Title>
+                       <Text type="secondary">Browser Locked • Logs Syncing</Text>
+                    </Card>
+                  </div>
+                </motion.div>
               </Col>
             </Row>
-          </Card>
-        </section>
-      </div>
+          </section>
+
+          {/* FEATURES SECTION */}
+          <section id="features-section" style={{ padding: '80px 50px', background: 'var(--bg-gradient)' }}>
+            <Title level={2} style={{ textAlign: 'center', marginBottom: 50, color: 'var(--color-5)' }}>
+              Engineered for Integrity
+            </Title>
+            <Row gutter={[24, 24]}>
+              {[
+                { icon: <LockOutlined />, title: 'Locked UI', desc: 'No copy-paste, no right-click.', color: 'var(--color-1)' },
+                { icon: <EyeOutlined />, title: 'Proctor Log', desc: 'Every action is recorded.', color: 'var(--color-4)' },
+                { icon: <ClockCircleOutlined />, title: 'Auto-Sync', desc: 'Data survives page refreshes.', color: 'var(--color-5)' },
+              ].map((feat, idx) => (
+                <Col xs={24} md={8} key={idx}>
+                  <Card hoverable style={{ borderRadius: 20, textAlign: 'center', height: '100%' }}>
+                    <div style={{ fontSize: 40, color: feat.color, marginBottom: 16 }}>{feat.icon}</div>
+                    <Title level={4}>{feat.title}</Title>
+                    <Text type="secondary">{feat.desc}</Text>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </section>
+
+          {/* REGISTRATION SECTION */}
+          <section id="register" style={{ padding: '100px 20px', background: '#fff' }}>
+            <Card 
+              styles={{ body: { padding: 0 } }} 
+              style={{ maxWidth: '1000px', margin: '0 auto', borderRadius: '30px', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.08)', border: 'none' }}
+            >
+              <Row>
+                <Col xs={24} md={10} style={{ background: 'var(--color-5)', color: 'white', padding: '60px 40px' }}>
+                  <Title level={2} style={{ color: 'white' }}>Start Session</Title>
+                  <Paragraph style={{ color: 'rgba(255,255,255,0.8)' }}>Verify your identity to unlock the proctored exam area.</Paragraph>
+                  <Divider style={{ borderColor: 'rgba(255,255,255,0.2)' }} />
+                  <Space orientation="vertical">
+                    <Text style={{ color: 'white' }}><ClockCircleOutlined /> 60 Minute Limit</Text>
+                    <Text style={{ color: 'white' }}><SafetyOutlined /> Anti-Cheat Active</Text>
+                  </Space>
+                </Col>
+                <Col xs={24} md={14} style={{ padding: '60px 50px' }}>
+                  <Form layout="vertical" onFinish={handleStartExam}>
+                    <Form.Item label="Full Name" name="name" rules={[{ required: true }]}>
+                      <Input size="large" placeholder="Enter your name" />
+                    </Form.Item>
+                    <Form.Item label="Email Address" name="email" rules={[{ required: true, type: 'email' }]}>
+                      <Input size="large" placeholder="Enter your email" />
+                    </Form.Item>
+                    <Form.Item name="agree" valuePropName="checked" rules={[{ required: true, message: 'Required' }]}>
+                      <Checkbox>I agree to the testing terms.</Checkbox>
+                    </Form.Item>
+                    <Button type="primary" block size="large" htmlType="submit" loading={loading} style={{ background: 'var(--color-5)', height: 50, borderRadius: 10 }}>
+                      Launch Secure Exam
+                    </Button>
+                  </Form>
+                </Col>
+              </Row>
+            </Card>
+          </section>
+        </Content>
+
+        <Footer style={{ textAlign: 'center', background: '#f9f9f9', padding: '40px' }}>
+          <Text type="secondary">© 2026 SecureAssess. Built for high-stakes validation.</Text>
+        </Footer>
+      </Layout>
     );
   }
 
   // EXAM VIEW
   return (
     <SecureTestWrapper candidateName={candidate.name}>
-      <div style={{ maxWidth: 800, margin: '0 auto', padding: '2rem 1rem' }}>
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <Title level={3} style={{ color: 'var(--color-5)' }}>Assessment in Progress</Title>
-          <Text type="secondary">Candidate: {candidate.name}</Text>
-        </div>
-
-        {activeAttemptId && (
-          <div style={{ marginBottom: 32 }}>
-            <Timer durationSeconds={3600} attemptId={activeAttemptId} onFinish={handleSubmit} />
-          </div>
-        )}
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-          {questions.map((q) => (
-            <Card key={q.id} style={{ borderRadius: 15 }}>
-              <Title level={4}>{q.text}</Title>
-              <Radio.Group onChange={(e) => handleAnswerChange(q.id, e.target.value)} value={answers[q.id]}>
-                <Space direction="vertical">
-                  {q.options.map((opt) => (
-                    <Radio key={opt} value={opt}>{opt}</Radio>
-                  ))}
-                </Space>
-              </Radio.Group>
-            </Card>
-          ))}
-        </div>
-
-        <div style={{ marginTop: 40, textAlign: 'center' }}>
-          <Button 
-            type="primary" 
-            size="large" 
-            onClick={handleSubmit} 
-            loading={submitting}
-            icon={<SendOutlined />}
-            style={{ padding: '0 50px', height: 50, borderRadius: 25, background: 'var(--color-5)', border: 'none' }}
-          >
-            Submit Final Answers
-          </Button>
-        </div>
+      <div style={{ maxWidth: 800, margin: '0 auto', padding: '3rem 1rem' }}>
+        <Timer durationSeconds={3600} attemptId={activeAttemptId!} onFinish={handleSubmit} />
+        {questions.map((q) => (
+          <Card key={q.id} style={{ marginBottom: 20, borderRadius: 15 }}>
+            <Title level={4}>{q.text}</Title>
+            <Radio.Group onChange={(e) => handleAnswerChange(q.id, e.target.value)}>
+              <Space direction="vertical">
+                {q.options.map(opt => <Radio key={opt} value={opt}>{opt}</Radio>)}
+              </Space>
+            </Radio.Group>
+          </Card>
+        ))}
+        <Button type="primary" size="large" block onClick={handleSubmit} loading={submitting} style={{ background: 'var(--color-5)', height: 50, borderRadius: 10 }}>
+          Submit Assessment
+        </Button>
       </div>
     </SecureTestWrapper>
   );
