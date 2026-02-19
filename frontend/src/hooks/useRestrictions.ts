@@ -58,8 +58,14 @@ export const useRestrictions = () => {
     };
 
     const handleSelectStart = (e: Event) => {
-      const target = e.target as HTMLElement;
-      if (!target.closest('input, textarea, [contenteditable="true"]')) {
+      const target = e.target;
+      let element: Element | null = null;
+      if (target instanceof Element) {
+        element = target;
+      } else if (target instanceof Node && target.parentElement) {
+        element = target.parentElement;
+      }
+      if (element && !element.closest('input, textarea, [contenteditable="true"]')) {
         e.preventDefault();
       }
     };
