@@ -76,7 +76,7 @@ export default function SuccessPage() {
             ]}
           />
           
-          <div style={{ marginTop: 20, padding: '15px', background: '#f6ffed', border: '1px solid #b7eb8f', borderRadius: 12 }}>
+          <div style={{ marginTop: 20, padding: '15px', background: '#6dbb1e', border: '1px solid #6de80f', borderRadius: 12 }}>
             <Text type="success">
               Your session is now closed. No further data is being recorded.
             </Text>
