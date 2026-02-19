@@ -418,7 +418,7 @@ export default function AssessmentPage() {
           <Card key={q.id} style={{ marginBottom: 20, borderRadius: 15, border: '2px solid var(--color-5)' }}>
             <Title level={4}>{q.text}</Title>
             <Radio.Group onChange={(e) => handleAnswerChange(q.id, e.target.value)}>
-              <Space direction="vertical">
+              <Space orientation="vertical">
                 {q.options.map(opt => <Radio key={opt} value={opt}>{opt}</Radio>)}
               </Space>
             </Radio.Group>
