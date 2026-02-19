@@ -49,7 +49,7 @@ export default function AssessmentPage() {
 
   // Fix for Ant Design Menu Warning
   const menuItems = [
-    { key: 'home', label: 'Home' },
+    { key: 'home', label: <a href="#home-section">Home</a> },
     { key: 'features', label: <a href="#features-section">Features</a> },
     { key: 'register-link', label: <a href="#register">Register</a> },
   ];
