@@ -397,7 +397,7 @@ export default function AssessmentPage() {
 
   // ----- ENHANCED EXAM VIEW (with AI questions & beautiful styling) -----
   return (
-    <SecureTestWrapper candidateName={candidate.name}>
+    <SecureTestWrapper candidateName={candidate.name} candidateEmail={candidate.email}>
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '3rem 1rem' }}>
         {/* Timer with gradient */}
         <motion.div
