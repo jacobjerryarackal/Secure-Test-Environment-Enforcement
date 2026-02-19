@@ -69,7 +69,7 @@ export default function SuccessPage() {
                 icon={<LogoutOutlined />} 
                 size="large"
                 style={{ borderRadius: 8, height: 45 }}
-                onClick={() => window.close()} // Optional: tries to close the tab
+                onClick={() => router.push('/')}
               >
                 Exit
               </Button>,
