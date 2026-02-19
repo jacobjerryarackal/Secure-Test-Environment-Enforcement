@@ -43,7 +43,7 @@ export default function SuccessPage() {
               </Title>
             }
             subTitle={
-              <Space direction="vertical" style={{ marginTop: 10 }}>
+              <Space orientation="vertical" style={{ marginTop: 10 }}>
                 <Text type="secondary" style={{ fontSize: 16 }}>
                   Thank you for completing the secure assessment. 
                   Your responses and proctoring logs have been successfully synced.
