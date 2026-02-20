@@ -4,7 +4,7 @@ export const EVENT_TYPES = [
   'focus', 'blur', 'visibility_change',
   'timer_start', 'timer_pause', 'timer_end',
   'assessment_start', 'assessment_submit',
-  'batch_send', 'offline_log'
+  'batch_send', 'offline_log', 'answer_change'
 ];
 
 export const ATTEMPT_STATUS = {
