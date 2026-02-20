@@ -1,8 +1,7 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  reactStrictMode: true,
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: false, // ✅ disable for development
   transpilePackages: ['antd', '@ant-design/icons'],
 };
 
-export default nextConfig;
+module.exports = nextConfig;
