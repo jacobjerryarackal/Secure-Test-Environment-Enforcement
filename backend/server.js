@@ -24,6 +24,6 @@ app.use('/api/logs', logRoutes);
 // 404 handler
 app.use(notFound);
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
