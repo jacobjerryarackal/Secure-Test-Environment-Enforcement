@@ -1,7 +1,9 @@
 export const corsConfig = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-frontend-domain.com'] 
-    : ['http://localhost:3000'],
+  origin: [
+    'http://localhost:3000',           // Local Frontend
+    'https://your-app.vercel.app'     // Your future Vercel URL
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
   optionsSuccessStatus: 200,
 };
