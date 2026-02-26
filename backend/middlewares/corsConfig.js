@@ -1,16 +1,12 @@
 export const corsConfig = {
-  // Try this to allow ANY Vercel deployment from your account
-  origin: (origin, callback) => {
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'https://secure-test-environment-enforcement-one.vercel.app'
-    ];
-    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Add OPTIONS
+  origin: [
+    'http://localhost:3000',
+    'https://secure-test-environment-enforcement-one.vercel.app',
+    // Vercel sometimes adds a trailing slash; adding both is safer
+    'https://secure-test-environment-enforcement-one.vercel.app/' 
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'], // Ensure these are allowed
   credentials: true,
+  optionsSuccessStatus: 200
 };
