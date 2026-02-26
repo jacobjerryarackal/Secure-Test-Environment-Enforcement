@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 10000;
 
 // Middlewares
 app.use(cors(corsConfig));
+console.log('CORS config:', corsConfig);
 app.options('*', cors(corsConfig));
 app.use(express.json({ limit: '10mb' }));
 
