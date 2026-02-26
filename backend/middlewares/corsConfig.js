@@ -1,3 +1,4 @@
+console.log('CORS config loaded with origins:', origin);
 export const corsConfig = {
   origin: [
     'http://localhost:3000',
