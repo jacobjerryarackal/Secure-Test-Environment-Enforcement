@@ -2,6 +2,8 @@ import axios from 'axios';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
+console.log("Current API Base:", process.env.NEXT_PUBLIC_API_URL);
+
 if (!API_BASE) {
   console.error("CRITICAL: NEXT_PUBLIC_API_URL is not defined!");
 }
