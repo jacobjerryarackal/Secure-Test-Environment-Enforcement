@@ -17,6 +17,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     },
   };
 
+
+  console.log(window.location.origin);
+
   return (
     <html lang="en">
       <body>
