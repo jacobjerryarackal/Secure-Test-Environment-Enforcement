@@ -11,11 +11,14 @@ dotenv.config();
 connectDB();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 
 // Middlewares
 app.use(cors(corsConfig));
+app.options('*', cors(corsConfig));
 app.use(express.json({ limit: '10mb' }));
+
+app.get('/', (req, res) => res.send('API is Online'));
 
 // Routes
 app.use('/api/attempts', attemptRoutes);
