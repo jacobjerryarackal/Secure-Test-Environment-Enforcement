@@ -3,6 +3,7 @@ import './globals.css';
 import { ConfigProvider, App as AntApp } from 'antd';
 import AntdRegistry from '@/lib/AntdRegistry';
 import { LogProvider } from '@/context/LogContext';
+import OriginLogger from '@/components/OriginLogger';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const theme = {
@@ -23,7 +24,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AntdRegistry>
           <ConfigProvider theme={theme}>
             <AntApp>
-              <LogProvider>{children}</LogProvider>
+              <LogProvider>{children}
+                <OriginLogger />
+              </LogProvider>
             </AntApp>
           </ConfigProvider>
         </AntdRegistry>
