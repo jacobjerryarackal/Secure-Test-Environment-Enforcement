@@ -1,4 +1,3 @@
-console.log('Loaded CORS origins:', origin);
 export const corsConfig = {
   origin: [
     'http://localhost:3000',
@@ -9,3 +8,5 @@ export const corsConfig = {
   credentials: true,
   optionsSuccessStatus: 200
 };
+
+console.log('Loaded CORS origins:', corsConfig.origin);
