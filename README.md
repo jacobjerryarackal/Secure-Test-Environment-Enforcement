@@ -102,7 +102,7 @@ Verify the backend is live by visiting:
 `https://<your-render-url>.onrender.com/`
 It should respond with **"API is Online"**.
 
-```
+
 
 ### Key Changes Made:
 * [cite_start]**Objective-Driven**: Added the "Overall Objective" of ensuring a locked-down, auditable environment[cite: 3, 4].
