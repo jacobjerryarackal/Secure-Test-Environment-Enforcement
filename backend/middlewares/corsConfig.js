@@ -8,5 +8,3 @@ export const corsConfig = {
   credentials: true,
   optionsSuccessStatus: 200
 };
-
-console.log('Loaded CORS origins:', corsConfig.origin);
