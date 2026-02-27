@@ -105,9 +105,9 @@ It should respond with **"API is Online"**.
 
 
 ### Key Changes Made:
-* [cite_start]**Objective-Driven**: Added the "Overall Objective" of ensuring a locked-down, auditable environment[cite: 3, 4].
-* [cite_start]**Task Specifics**: Explicitly listed the blocking of `Ctrl+C/V/X` and context menus as core features[cite: 13, 15, 16, 17, 18].
-* [cite_start]**Logging Details**: Included the unified event schema (Timestamp, Attempt ID, Metadata) as defined in your requirements[cite: 32, 34, 35, 37].
+* **Objective-Driven**: Added the "Overall Objective" of ensuring a locked-down, auditable environment[cite: 3, 4].
+* **Task Specifics**: Explicitly listed the blocking of `Ctrl+C/V/X` and context menus as core features[cite: 13, 15, 16, 17, 18].
+* **Logging Details**: Included the unified event schema (Timestamp, Attempt ID, Metadata) as defined in your requirements[cite: 32, 34, 35, 37].
 * **Troubleshooting Support**: Added the deployment notes for CORS and the Health Check route to help future developers (or yourself) avoid the "Not Found" issues you recently resolved.
 
 ```
